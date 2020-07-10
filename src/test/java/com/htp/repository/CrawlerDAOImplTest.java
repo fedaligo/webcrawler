@@ -17,8 +17,8 @@ public class CrawlerDAOImplTest {
     }
 
     @Test
-    public void getPageLinks() {
-        assertNotEquals(crawlerDAO.getPageLinks("https://en.wikipedia.org/wiki/Elon_Musk"), 0);
+    public void findLinksOnPage() {
+        assertNotEquals(crawlerDAO.findLinksOnPage("https://en.wikipedia.org/"), 0);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class CrawlerDAOImplTest {
     }
 
     @Test
-    public void writeToCsvFile() {
+    public void saveToCsvFile() {
 
     }
 
@@ -35,7 +35,7 @@ public class CrawlerDAOImplTest {
     public void findTop() throws IOException {
         String[] word = new String[1];
         word[0] = "musk";
-        crawlerDAO.getPageLinks("https://en.wikipedia.org/wiki/Elon_Musk");
+        crawlerDAO.findLinksOnPage("https://en.wikipedia.org/wiki/Elon_Musk");
         crawlerDAO.deleteInfoCsvFile("file.csv");
         crawlerDAO.deleteInfoCsvFile("top10.csv");
         crawlerDAO.getWord(word);

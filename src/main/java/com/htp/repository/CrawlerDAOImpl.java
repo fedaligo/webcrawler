@@ -10,32 +10,55 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 
+/**
+ * Class with main functions of crawler.
+ * @autor Igor Fedonenkov
+ * @version 1.0
+ */
 public class CrawlerDAOImpl implements CrawlerDAO {
+
+    /** Collection with finded links */
     private HashSet<String> links = new HashSet<>();
+
+    /** Number of entry stage */
     private int stage = 0;
+
+    /** A string to check the link for mismatch of the link to the picture */
     private final String jpg = ".jpg";
+
+    /** Collection with information about matching words */
     private List<String[]> write = new ArrayList<>();
+
+    /** Variable for counting top 10 */
     private int max = 0;
 
+    /**
+     * Method for checking a string against a number
+     * @param word - string for checking
+     * @return returns boolean match or mismatch value
+     */
     @Override
-    public boolean isInt(String x) throws NumberFormatException {
+    public boolean isInt(String word) throws NumberFormatException {
         try {
-            Integer.parseInt(x);
+            Integer.parseInt(word);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
+    /**
+     * Method for searching all links on the current page
+     * @param URL - string of link
+     * @return returns quantity of unique links
+     */
     @Override
-    public int getPageLinks(String URL) {
+    public int findLinksOnPage(String URL) {
         try {
             System.out.println("I am on the LINK " + URL);
             System.out.println(links.size());
             System.out.println("-----------------------");
-            //2. Fetch the HTML code
             Document document = Jsoup.connect(URL).get();
-            //3. Parse the HTML to extract links to other URLs
             Elements linksOnPage = document.select("a[href]");
             for (int page = 0; page < linksOnPage.size(); page++) {
                 if (stage == 0) {
@@ -60,7 +83,7 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                         stage = stage - 1;
                         continue;
                     } else {
-                        getPageLinks(linksOnPage.get(page).attr("abs:href"));
+                        findLinksOnPage(linksOnPage.get(page).attr("abs:href"));
                     }
                 }
                 if (links.contains(linksOnPage.get(page).attr("abs:href")) == false) {
@@ -76,7 +99,7 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                                         linksOnPage.get(page).attr("abs:href"));
                                 stage = stage + 1;
                                 System.out.println("Going to the stage - " + stage);
-                                getPageLinks(linksOnPage.get(page).attr("abs:href"));
+                                findLinksOnPage(linksOnPage.get(page).attr("abs:href"));
                             }
                         } else {
                             System.out.println("Limit is 10000");
@@ -109,11 +132,14 @@ public class CrawlerDAOImpl implements CrawlerDAO {
         }
     }
 
+    /**
+     * Method for searching some words on the current page
+     * @param mass - array of string with information about searching words
+     */
     @Override
     public void getWord(String[] mass) {
         links.forEach(x -> {
             try {
-                System.out.println("Длинна списка ссылок - "+links.size());
                 for (int z = 0; z < mass.length; z++) {
                     int counter = 0;
                     String[] info = new String[3];
@@ -141,7 +167,7 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                     info[1] = mass[z];
                     info[2] = String.valueOf(counter);
                     write.add(info);
-                    writeToCsvFile(info, "file.csv");
+                    saveToCsvFile(info, "file.csv");
                     in.close();
                 }
             } catch (Exception e) {
@@ -150,8 +176,13 @@ public class CrawlerDAOImpl implements CrawlerDAO {
         });
     }
 
+    /**
+     * Method for recording found matches in a file
+     * @param x - array of string with information about searching words
+     * @param fileName - name of file where will be saved information
+     */
     @Override
-    public void writeToCsvFile(String[] x, String fileName) throws IOException {
+    public void saveToCsvFile(String[] x, String fileName) throws IOException {
         File fl = new File(fileName);
         FileWriter pw = null;
         try {
@@ -174,6 +205,10 @@ public class CrawlerDAOImpl implements CrawlerDAO {
         pw.close();
     }
 
+    /**
+     * Method for searching top 10 of the most popular matches among all
+     * @return returns boolean value of successful or unsuccessful result
+     */
     @Override
     public boolean findTop() throws IOException {
         int count = 0;
@@ -196,7 +231,7 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                     System.out.println(write.get(i)[0]);
                     System.out.println("The word - " + write.get(i)[1] + " is discovered " + write.get(i)[2] +
                             " times on this page");
-                    writeToCsvFile(write.get(i), "top10.csv");
+                    saveToCsvFile(write.get(i), "top10.csv");
                     count++;
                 }
             } else {
@@ -207,6 +242,10 @@ public class CrawlerDAOImpl implements CrawlerDAO {
 
     }
 
+    /**
+     * Method for deleting of all information in a file
+     * @param fileName - name of file where will be deleted information
+     */
     @Override
     public void deleteInfoCsvFile(String fileName) throws IOException {
         File fl = new File(fileName);

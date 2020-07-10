@@ -6,7 +6,16 @@ import com.htp.repository.CrawlerDAOImpl;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Class with a full application loop.
+ * @autor Igor Fedonenkov
+ * @version 1.0
+ */
 public class CrawlerService {
+
+    /**
+     * Method for starting a full application loop
+     */
     public void start () throws IOException {
         CrawlerDAO crawler = new CrawlerDAOImpl();
         System.out.println("Enter the quantity of searching words");
@@ -21,14 +30,7 @@ public class CrawlerService {
             System.out.println("Enter the " + (i+1) + " word for searching");
             mass[i] = sc.nextLine();
         }
-        //1. Pick a URL from the frontier
-        //crawler.getPageLinks("https://fabrika-uborki.by/");
-        //crawler.getPageLinks("https://en.wikipedia.org/wiki/Elon_Musk");
-        crawler.getPageLinks("https://en.wikipedia.org/");
-        //crawler.getPageLinks("https://onliner.by/");
-        //crawler.getPageLinks("https://tut.by/");
-        //crawler.getPageLinks("http://vkontakte.ru/");
-        //crawler.getArticles();
+        crawler.findLinksOnPage("https://en.wikipedia.org/");
         crawler.deleteInfoCsvFile("file.csv");
         crawler.deleteInfoCsvFile("top10.csv");
         crawler.getWord(mass);
