@@ -18,19 +18,26 @@ public class CrawlerService {
      */
     public void start () throws IOException {
         CrawlerDAO crawler = new CrawlerDAOImpl();
-        System.out.println("Enter the quantity of searching words");
+
         Scanner sc = new Scanner(System.in);
-        String q = sc.nextLine();
-        while(!crawler.isInt(q)){
+        System.out.println("Enter maximum number of unique links");
+        String numberOfLinks = sc.nextLine();
+        while(!crawler.isInt(numberOfLinks)){
             System.out.println("Enter a correct number");
-            q = sc.nextLine();
+            numberOfLinks = sc.nextLine();
         }
-        String[] mass = new String[Integer.parseInt(q)];
+        System.out.println("Enter the quantity of searching words");
+        String numberOfWords = sc.nextLine();
+        while(!crawler.isInt(numberOfWords)){
+            System.out.println("Enter a correct number");
+            numberOfWords = sc.nextLine();
+        }
+        String[] mass = new String[Integer.parseInt(numberOfWords)];
         for (int i = 0; i < mass.length; i++) {
             System.out.println("Enter the " + (i+1) + " word for searching");
             mass[i] = sc.nextLine();
         }
-        crawler.findLinksOnPage("https://en.wikipedia.org/");
+        crawler.findLinksOnPage("https://en.wikipedia.org/",numberOfLinks);
         crawler.deleteInfoCsvFile("file.csv");
         crawler.deleteInfoCsvFile("top10.csv");
         crawler.getWord(mass);

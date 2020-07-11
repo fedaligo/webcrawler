@@ -19,9 +19,10 @@ public interface CrawlerDAO {
     /**
      * Method for searching all links on the current page
      * @param URL - string of link
+     * @param numberOfLinks - maximum number of unique links in the array
      * @return returns quantity of unique links
      */
-    public int findLinksOnPage(String URL);
+    public int findLinksOnPage(String URL, String numberOfLinks);
 
     /**
      * Method for searching some words on the current page

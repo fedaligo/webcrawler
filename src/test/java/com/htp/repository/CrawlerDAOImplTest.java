@@ -18,7 +18,7 @@ public class CrawlerDAOImplTest {
 
     @Test
     public void findLinksOnPage() {
-        assertNotEquals(crawlerDAO.findLinksOnPage("https://en.wikipedia.org/"), 0);
+        assertNotEquals(crawlerDAO.findLinksOnPage("https://en.wikipedia.org/", "100"), 0);
     }
 
     @Test
@@ -34,8 +34,8 @@ public class CrawlerDAOImplTest {
     @Test
     public void findTop() throws IOException {
         String[] word = new String[1];
-        word[0] = "musk";
-        crawlerDAO.findLinksOnPage("https://en.wikipedia.org/wiki/Elon_Musk");
+        word[0] = "the";
+        crawlerDAO.findLinksOnPage("https://en.wikipedia.org/", "100");
         crawlerDAO.deleteInfoCsvFile("file.csv");
         crawlerDAO.deleteInfoCsvFile("top10.csv");
         crawlerDAO.getWord(word);

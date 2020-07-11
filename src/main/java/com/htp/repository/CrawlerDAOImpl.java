@@ -50,20 +50,21 @@ public class CrawlerDAOImpl implements CrawlerDAO {
     /**
      * Method for searching all links on the current page
      * @param URL - string of link
+     * @param numberOfLinks - maximum number of unique links in the array
      * @return returns quantity of unique links
      */
     @Override
-    public int findLinksOnPage(String URL) {
+    public int findLinksOnPage(String URL, String numberOfLinks) {
         try {
             System.out.println("I am on the LINK " + URL);
-            System.out.println(links.size());
+            System.out.println("Number of unique links in the array - " + links.size());
             System.out.println("-----------------------");
             Document document = Jsoup.connect(URL).get();
             Elements linksOnPage = document.select("a[href]");
             for (int page = 0; page < linksOnPage.size(); page++) {
                 if (stage == 0) {
                     for (Element pg : linksOnPage) {
-                        if (links.size() < 10000) {
+                        if (links.size() < Integer.parseInt(numberOfLinks)) {
                             if (pg.attr("abs:href").indexOf(jpg) != -1 |
                                     pg.attr("abs:href").trim().isEmpty() == true) {
                                 System.out.println("image or empty");
@@ -83,12 +84,12 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                         stage = stage - 1;
                         continue;
                     } else {
-                        findLinksOnPage(linksOnPage.get(page).attr("abs:href"));
+                        findLinksOnPage(linksOnPage.get(page).attr("abs:href"), numberOfLinks);
                     }
                 }
                 if (links.contains(linksOnPage.get(page).attr("abs:href")) == false) {
                     if (stage < 8) {
-                        if (links.size() < 10000) {
+                        if (links.size() < Integer.parseInt(numberOfLinks)) {
                             if (linksOnPage.get(page).attr("abs:href").indexOf(jpg) != -1 |
                                     linksOnPage.get(page).attr("abs:href").trim().isEmpty() == true) {
                                 System.out.println("image or empty");
@@ -99,19 +100,21 @@ public class CrawlerDAOImpl implements CrawlerDAO {
                                         linksOnPage.get(page).attr("abs:href"));
                                 stage = stage + 1;
                                 System.out.println("Going to the stage - " + stage);
-                                findLinksOnPage(linksOnPage.get(page).attr("abs:href"));
+                                findLinksOnPage(linksOnPage.get(page).attr("abs:href"), numberOfLinks);
                             }
                         } else {
-                            System.out.println("Limit is 10000");
+                            System.out.println("Limit is - " + numberOfLinks);
                             break;
                         }
                     } else {
                         System.out.println("Attempt to exceed the stage - 8");
                         System.out.println("Total links per page -" + (linksOnPage.size() - 1) + ", I am on -" + page);
-                        continue;
+                        if(page < linksOnPage.size() - 1){
+                            continue;
+                        }
                     }
                 } else {
-                    System.out.println("Link is already exist");
+                    System.out.println("Link is already exist - " + (linksOnPage.get(page).attr("abs:href")));
                     System.out.println("Total links per page -" + (linksOnPage.size() - 1) + ", I am on -" + page);
                 }
                 if (page == linksOnPage.size() - 1) {
